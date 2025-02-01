@@ -1,0 +1,56 @@
+const std = @import("std");
+const cfg = @import("config.zig");
+const DefaultConfig = cfg.DefaultConfig;
+const loadJSON = cfg.loadJSON;
+const httpz = @import("httpz");
+
+const routes = @import("api.zig");
+
+const log = std.log;
+
+pub fn main() !void {
+
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+   
+    // === Config Loading === //
+
+    const config_p = loadJSON("config.json", cfg.Config, allocator);
+    var config = DefaultConfig;
+
+    var Global = routes.Global{
+        .allocator = allocator
+    };
+
+    if(config_p) |config_d| {
+        config = config_d.value;
+        log.info("Loaded config", .{});
+    }
+
+    // === Server Config === //
+    
+    var server = httpz.ServerApp(*routes.Global).init(allocator, .{
+        .port = config.port.?,
+        .address = config.address.?
+    }, &Global) catch {
+        log.err("Error during server initialization", .{});
+        return;
+    };
+
+    defer {
+        server.stop();
+        server.deinit();
+    }
+
+    var router = server.router();
+    router.get("/broker/api/v1/hello", routes.hello);
+    router.post("/broker/api/v1/log/:kind/:value", routes.log_data);
+
+    // === Server Starting === //
+
+    log.info("Listening requests ( {s}:{d} )", .{config.address.?, config.port.?});
+    try server.listen();
+
+}
+
+

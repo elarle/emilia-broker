@@ -48,7 +48,7 @@ jobs:
         # uses: googleapis/release-please-action@f0145e31b50c56905571d69a63bbe997c0ce6dd1
         uses: googleapis/release-please-action@v3.1.2
         with:
-          release-type: binary
+          release-type: simple
           path: ./out
 
                 

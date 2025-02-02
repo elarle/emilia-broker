@@ -45,6 +45,10 @@ pub fn main() !void {
     var router = server.router();
     router.get("/broker/api/v1/hello", routes.hello);
     router.post("/broker/api/v1/log/:kind/:value", routes.log_data);
+    
+    router.get("/broker/api/v1/data", routes.get_data);
+    router.get("/broker/api/v1/data/:start_time", routes.get_data);
+    router.get("/broker/api/v1/data/:start_time/:end_time", routes.get_data);
 
     // === Server Starting === //
 

@@ -21,6 +21,7 @@ const Ok: ResponseTemplate = .{.status = 200, .msg = "OK"};
 const Invalid: ResponseTemplate = .{.status = 400, .msg = "Invalid Request"};
 const Unauthorized: ResponseTemplate = .{.status = 401, .msg = "Unauthorized"};
 const Authorized: ResponseTemplate = .{.status = 201, .msg = "Auhtorized"};
+const NotImplemented: ResponseTemplate = .{.status = 501, .msg = "Not Implemented :("};
 
 pub fn setResponse(res_t: ResponseTemplate, res: *httpz.Response) void{
     res.status = res_t.status;
@@ -39,6 +40,12 @@ pub const Subject = enum (u8){
     wind = 3,
     rain = 4,
 };
+
+pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
+   _ = ctx;
+   _ = req;
+    setResponse(NotImplemented, res);
+}
 
 pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
 

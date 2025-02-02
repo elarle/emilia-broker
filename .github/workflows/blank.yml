@@ -46,10 +46,10 @@ jobs:
       - name: release-please-action
         # You may pin to the exact commit or the version.
         # uses: googleapis/release-please-action@f0145e31b50c56905571d69a63bbe997c0ce6dd1
-        uses: googleapis/release-please-action@v3.1.2
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          release-type: simple
-          path: ./out
-
-                
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            out/*        
 

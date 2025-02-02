@@ -1,6 +1,6 @@
 # Broker de la Estación de Monitoreo de Información sobre Lluvias e Interacciones Atmosféricas (E.M.I.L.I.A.)
-
 Este programa es el broker de EMILIA, se encarga de la recopilación, formato y servicio de los datos del proyecto.
+**El proyecto se encuentra en una fase muy temprana, por lo que algunas funcionalidades no están disponibles todavía.**
 
 ## Instalación
 

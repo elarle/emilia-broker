@@ -39,7 +39,7 @@ pub fn loadJSON(file_name: []const u8, T: anytype, allocator: std.mem.Allocator)
         return null;
     }
 
-    defer allocator.free(content.?);
+    //defer allocator.free(content.?);
 
     return std.json.parseFromSlice(T, allocator, content.?, .{}) catch {
         return null;

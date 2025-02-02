@@ -20,6 +20,7 @@ pub const ResponseTemplate = struct{
 const Ok: ResponseTemplate = .{.status = 200, .msg = "OK"};
 const Invalid: ResponseTemplate = .{.status = 400, .msg = "Invalid Request"};
 const Unauthorized: ResponseTemplate = .{.status = 401, .msg = "Unauthorized"};
+const Authorized: ResponseTemplate = .{.status = 201, .msg = "Auhtorized"};
 
 pub fn setResponse(res_t: ResponseTemplate, res: *httpz.Response) void{
     res.status = res_t.status;
@@ -80,7 +81,7 @@ pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
 
     log.debug("INPUT: {s}, VAL: {s}", .{data_type, data_value});
 
-    res.status = 200;
-    res.body = "PEPE";
+    setResponse(Authorized, res); 
+
 }
 

@@ -3,7 +3,7 @@ const httpz = @import("httpz");
 
 const log = std.log;
 
-const io = @import("config.zig");
+const io = @import("files.zig");
 
 pub const Global = struct{
     allocator: std.mem.Allocator

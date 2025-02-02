@@ -1,5 +1,5 @@
 const std = @import("std");
-const cfg = @import("config.zig");
+const cfg = @import("files.zig");
 const DefaultConfig = cfg.DefaultConfig;
 const loadJSON = cfg.loadJSON;
 const httpz = @import("httpz");

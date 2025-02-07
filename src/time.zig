@@ -4,7 +4,7 @@ const log = std.log;
 
 const Months= [12]u8{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31};
 
-const Date = struct {
+pub const Date = struct {
 
     time_stamp: i64 = 0,
 
@@ -16,12 +16,18 @@ const Date = struct {
     current_hour: i64 = 0,
     current_minute: i64 = 0,
     current_second: i64 = 0,
-   
-    //Europe/Madrid only
-    fn dateFromTimestamp(timestamp: i64) Date{
+  
+    pub fn update(self: *Date) void{
 
-        var self = Date{.time_stamp = timestamp};
+        self.current_day = 1;
+        //ZERO BASED
+        self.current_month = 0;
+        self.current_year = 1970;
 
+        self.current_hour = 0;
+        self.current_minute = 0;
+        self.current_second = 0;
+        
         const seconds = @divTrunc(@rem(self.time_stamp,86400), 1) + 3600; //Europe/Madrid
  
         self.current_hour = @divTrunc(seconds,3600);
@@ -61,6 +67,12 @@ const Date = struct {
 
         //Are zero based here
         self.current_month += 1;
+    }
+
+    //Europe/Madrid only
+    pub fn dateFromTimestamp(timestamp: i64) Date{
+        var self = Date{.time_stamp = timestamp};
+        self.update();
         return self;
     }
 };

@@ -69,7 +69,6 @@ pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
             return;
          };
       }
-      log.info("ASD {d}", .{end_time});
 
       var rows = ctx.db.rows("SELECT * FROM data WHERE timestamp >= ?1 AND timestamp <= ?2", .{start_time, end_time}) catch {
          setResponse(Invalid, res);

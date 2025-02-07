@@ -31,6 +31,8 @@ pub fn loadFile(file_name: []const u8, allocator: std.mem.Allocator) ?[]u8{
         return null;
     };
 
+    file.close();
+
     return content;
     
 }

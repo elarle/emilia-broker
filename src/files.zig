@@ -3,12 +3,14 @@ const log = std.log;
 
 pub const Config = struct {
     port: ?u16 = null,
-    address: ?[]const u8 = null
+    address: ?[]const u8 = null,
+    database_file: ?[:0]const u8 = null
 };
 
 pub const DefaultConfig = Config{
     .port = @as(u16, @intCast(2025)),
-    .address = "127.0.0.1"
+    .address = "127.0.0.1",
+    .database_file = "data.db"
 };
 
 pub fn createWriteFile(file_name: []const u8, data: []u8) !void{

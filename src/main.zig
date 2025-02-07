@@ -3,6 +3,7 @@ const cfg = @import("files.zig");
 const DefaultConfig = cfg.DefaultConfig;
 const loadJSON = cfg.loadJSON;
 const httpz = @import("httpz");
+const sql = @import("zqlite");
 
 const routes = @import("api.zig");
 
@@ -19,13 +20,24 @@ pub fn main() !void {
     var config = DefaultConfig;
 
     var Global = routes.Global{
-        .allocator = allocator
+        .allocator = allocator,
+        .db = undefined
     };
 
     if(config_p) |config_d| {
         config = config_d.value;
         log.info("Loaded config", .{});
     }
+
+    // === Init database === //
+    Global.db = sql.open(config.database_file.?, sql.OpenFlags.Create | sql.OpenFlags.EXResCode) catch {
+        log.err("Couldn't open database", .{});
+        return;
+    };
+
+    try Global.db.exec("CREATE TABLE IF NOT EXISTS data (timestamp INTEGER PRIMARY KEY, data_type INTEGER NOT NULL, value REAL NOT NULL) WITHOUT ROWID;", .{});
+
+    defer Global.db.close();
 
     // === Server Config === //
     

@@ -1,12 +1,15 @@
 const std = @import("std");
 const httpz = @import("httpz");
+const sql = @import("zqlite");
 
 const log = std.log;
 
 const io = @import("files.zig");
+const Date = @import("time.zig").Date;
 
 pub const Global = struct{
-    allocator: std.mem.Allocator
+    allocator: std.mem.Allocator,
+    db: sql.Conn
 };
 pub const Context = struct {
     global: *Global,
@@ -15,6 +18,12 @@ pub const Context = struct {
 pub const ResponseTemplate = struct{
     status: u16,
     msg: []const u8
+};
+
+pub const StoreTemplate = struct{
+    timestamp: i64,
+    data_type: i64,
+    value: f64
 };
 
 const Ok: ResponseTemplate = .{.status = 200, .msg = "OK"};
@@ -42,14 +51,60 @@ pub const Subject = enum (u8){
 };
 
 pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
-   _ = ctx;
-   _ = req;
-    setResponse(NotImplemented, res);
+
+   const start_time_param = req.param("start_time");
+   const end_time_param = req.param("end_time");
+
+   if(start_time_param) |start_time_str| {
+      const start_time = std.fmt.parseInt(i64, start_time_str, 10) catch {
+         setResponse(Invalid, res);
+         return; 
+      };
+
+      var end_time = std.time.timestamp();
+
+      if(end_time_param) |end_time_str| {
+         end_time = std.fmt.parseInt(i64, end_time_str, 10) catch {
+            setResponse(Invalid, res);
+            return;
+         };
+      }
+      log.info("ASD {d}", .{end_time});
+
+      var rows = ctx.db.rows("SELECT * FROM data WHERE timestamp >= ?1 AND timestamp <= ?2", .{start_time, end_time}) catch {
+         setResponse(Invalid, res);
+         return; 
+      };
+    
+      var js_writter = std.json.writeStream(res.writer(), .{.whitespace = .indent_3});
+      try js_writter.beginObject();
+      try js_writter.objectField("data");
+      try js_writter.beginArray();
+        
+      while (rows.next()) |row| {
+         log.info("ASD {d}", .{row.int(0)});
+         try js_writter.write(StoreTemplate{
+             .timestamp = row.int(0),
+             .data_type = row.int(1),
+             .value = row.float(2),
+         });
+      }
+
+      try js_writter.endArray();
+      try js_writter.endObject();
+
+      defer rows.deinit();
+
+      return;
+   }
+
+   setResponse(Invalid, res);
+   
 }
 
 pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
 
-    const timestamp = std.time.milliTimestamp();
+    const timestamp = std.time.timestamp();
 
     const data_type = req.param("kind").?;
     const data_value = req.param("value").?;
@@ -59,32 +114,18 @@ pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
         return;
     };
 
-    const value = std.fmt.parseFloat(f128, data_value) catch {
+    const value = std.fmt.parseFloat(f64, data_value) catch {
         setResponse(Invalid, res);
         return;
     };
 
-    const sub = std.meta.intToEnum(Subject, sub_u8) catch {
+    //Check if valid value
+    _ = std.meta.intToEnum(Subject, sub_u8) catch {
         setResponse(Invalid, res);
         return;
     };
 
-    log.info("REGISTERED ({d}) {s}: {d}", .{timestamp, @tagName(sub), value});
-    //try because not storing data means fatal
-    const o_filename = try std.fmt.allocPrint(
-        ctx.allocator, 
-        "data/current/{d}.json", 
-        .{timestamp}
-    );
-
-    //It may look ugly but works (error when printing { due to format)
-    const output_data = try std.fmt.allocPrint(
-        ctx.allocator,
-        "{c}\"type\": \"{s}\", \"value\": {d}{c}",
-        .{'{', @tagName(sub), value, '}'}
-    );
-
-    try io.createWriteFile(o_filename, output_data); 
+    try ctx.db.exec("INSERT INTO data (timestamp, data_type, value) VALUES (?1, ?2, ?3)", .{timestamp, sub_u8, value}); 
 
     log.debug("INPUT: {s}, VAL: {s}", .{data_type, data_value});
 

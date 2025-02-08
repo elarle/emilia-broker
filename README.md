@@ -4,6 +4,10 @@ Este programa es el broker de EMILIA, se encarga de la recopilación, formato y 
 
 ## Instalación
 
+### Directa:
+Puedes descargar el archivo compilado desde [aquí](https://github.com/elarle/emilia-broker/releases/tag/latest).
+
+### Compilada:
 Usa la versión de [zig](https://ziglang.org/download/) 0.13.0  
 **IMPORTANTE**: No está planeado para ser utilizado en un sistema operativo que no sea linux.
 ```bash

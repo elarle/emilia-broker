@@ -61,7 +61,7 @@ pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
          return; 
       };
 
-      var end_time = std.time.timestamp();
+      var end_time = std.time.milliTimestamp();
 
       if(end_time_param) |end_time_str| {
          end_time = std.fmt.parseInt(i64, end_time_str, 10) catch {
@@ -81,7 +81,6 @@ pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
       try js_writter.beginArray();
         
       while (rows.next()) |row| {
-         log.info("ASD {d}", .{row.int(0)});
          try js_writter.write(StoreTemplate{
              .timestamp = row.int(0),
              .data_type = row.int(1),
@@ -103,7 +102,7 @@ pub fn get_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
 
 pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
 
-    const timestamp = std.time.timestamp();
+    const timestamp = std.time.milliTimestamp();
 
     const data_type = req.param("kind").?;
     const data_value = req.param("value").?;
@@ -125,8 +124,6 @@ pub fn log_data(ctx: *Global, req: *httpz.Request, res: *httpz.Response) !void{
     };
 
     try ctx.db.exec("INSERT INTO data (timestamp, data_type, value) VALUES (?1, ?2, ?3)", .{timestamp, sub_u8, value}); 
-
-    log.debug("INPUT: {s}, VAL: {s}", .{data_type, data_value});
 
     setResponse(Authorized, res); 
 

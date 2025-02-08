@@ -47,8 +47,8 @@ El broker también sirve los datos por HTTP en las rutas:
  * `http://<servidor>/broker/api/v1/data/<start_UNIX_time>` Sirve los datos desde la fecha introducida hasta la fecha actual (incluyendo a los almacenados en la carpeta current). Para devolver todos los datos la puedes usar 0 como tiempo de inicio.
  * `http://<servidor>/broker/api/v1/data/<start_UNIX_time>/<end_UNIX_time>` Serve los datos en el intervalo de tiempo marcado.
 
-**IMPORTANTE** Siempre que se menciona UNIX time se refiere al numero entero de **SEGUNDOS** transcurridos desde 1970.
-Por ejemplo: `Sat, 01 Feb 2025 18:01:52 GMT` equivale a `1738432912`
+**IMPORTANTE** Siempre que se menciona UNIX time se refiere al numero entero de **MILISEGUNDOS** transcurridos desde 1970.
+Por ejemplo: `Sat, 01 Feb 2025 18:01:52 GMT` equivale a `1738432912000`
 
 ## Contribuciones
 Se aceptan pull request y peticiones.

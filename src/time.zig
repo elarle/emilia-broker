@@ -28,13 +28,13 @@ pub const Date = struct {
         self.current_minute = 0;
         self.current_second = 0;
         
-        const seconds = @divTrunc(@rem(self.time_stamp,86400), 1) + 3600; //Europe/Madrid
+        const seconds = @rem(self.time_stamp,86400000) + 3600; //Europe/Madrid
  
         self.current_hour = @divTrunc(seconds,3600);
         self.current_minute = @divTrunc(seconds-(self.current_hour*3600),60);
         self.current_second = seconds-(self.current_hour*3600) - (self.current_minute*60);
 
-        self.current_day = @divTrunc(self.time_stamp,86400)+1; 
+        self.current_day = @divTrunc(self.time_stamp,86400*1000)+1; 
         var keep_counting = true;
 
         //Date calc
@@ -87,7 +87,7 @@ pub fn printDate(date: Date)void{
 test "Make sure date works"{
     const expect = std.testing.expect;
 
-    const date = Date.dateFromTimestamp(1738540800);
+    const date = Date.dateFromTimestamp(1738540800000);
     
     try expect(date.current_day == 3);   
     try expect(date.current_month == 2);
